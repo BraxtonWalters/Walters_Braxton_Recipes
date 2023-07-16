@@ -8,7 +8,7 @@ NAME_REGEX = re.compile(r'^[a-zA-Z]+$')
 from flask_bcrypt import Bcrypt
 bcrypt = Bcrypt(app)
 #! add the database!!!
-DATABASE = ""
+DATABASE = "recipes"
 
 
 # pipenv install flask pymysql flask-bcrypt
