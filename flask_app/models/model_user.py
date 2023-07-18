@@ -13,24 +13,28 @@ class User:
         self.created_at = data["created_at"]
         self.updated_at = data["updated_at"]
 
+    # create
     @classmethod
     def create(cls, data):
         query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(password)s)"
         results = connectToMySQL(DATABASE).query_db(query, data)
         return results
     
+    # read
     @classmethod
     def get_by_email(cls, data):
         query = "SELECT * FROM users WHERE email = %(email)s"
         results = connectToMySQL(DATABASE).query_db(query, data)
-        return results
+        return cls(results[0])
     
+    # read
     @classmethod
     def get_user_by_id(cls, data):
         query = "SELECT first_name, last_name, email FROM users WHERE id = %(id)s"
         results = connectToMySQL(DATABASE).query_db(query, data)
         return results[0]
 
+    # validate
     @staticmethod
     def validator_reg(data):
         is_valid = True
@@ -47,7 +51,7 @@ class User:
         if not NAME_REGEX.match(data["last_name"]):
             flash("Must contain only letters", "error_users_last_name")
             is_valid = False
-
+        #! not dry
         if len(User.get_by_email(data)) >= 1:
             flash("Email already exists", "error_users_email")
             is_valid = False
@@ -69,15 +73,18 @@ class User:
 
         return is_valid
     
+    # validate
     @staticmethod
     def validator_login(data):
         is_valid = True
+        #! not dry
         if not User.get_by_email(data):
             flash("Email is not a registered email", "error_login_user_email")
             is_valid = False
         else:
+            #! not dry
             user_in_db = User.get_by_email(data)
-            if not bcrypt.check_password_hash(user_in_db[0]["password"], data["password"]):
+            if not bcrypt.check_password_hash(user_in_db.password, data["password"]):
                 flash("Wrong password bub", "error_password_user_password")
                 is_valid = False
 

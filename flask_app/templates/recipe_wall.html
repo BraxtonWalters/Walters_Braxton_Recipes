@@ -46,7 +46,7 @@
                           {% else %}
                           <td class="fs-4 text-center">No</td>
                           {% endif %}
-                          <td class="fs-4 text-center">{{ recipe.first_name }}</td>
+                          <td class="fs-4 text-center">{{ recipe.user.first_name }}</td>
                           {% if session["user_id"] == recipe.user_id %}
                           <td class="text-center">
                             <a class="btn btn-info ms-3 py-1" href="/recipe/view/{{ recipe.id }}">View</a>
@@ -54,7 +54,7 @@
                             <a class="btn btn-info ms-3 py-1" href="/recipe/delete/{{ recipe.id }}">delete</a>
                           </td>
                           {% else %}
-                          <td>
+                          <td class="text-center">
                               <a class="btn btn-info" href="/recipe/view/{{ recipe.id }}">View</a>
                           </td>
                           {% endif %}
