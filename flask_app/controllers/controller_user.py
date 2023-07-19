@@ -1,6 +1,5 @@
 from flask_app import app, bcrypt
 from flask import render_template, redirect, request, session
-#! Is this going to cause a circular import issue??? 
 from flask_app.models.model_user import User
 from flask_app.models.model_recipe import Recipe
 
@@ -33,8 +32,8 @@ def user_login():
     if not User.validator_login(request.form):
         return redirect("/")
     
-    user_id = User.get_by_email(request.form)
-    session["user_id"] = user_id.id
+    user = User.get_by_email(request.form)
+    session["user_id"] = user.id
     return redirect('/recipes')
 
 # user logout

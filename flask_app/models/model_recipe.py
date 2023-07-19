@@ -28,17 +28,16 @@ class Recipe:
     def get_all_recipes(cls):
         query = "SELECT * FROM recipes join users on users.id = recipes.user_id;"
         results = connectToMySQL(DATABASE).query_db(query)
+
+
         all_recipes = []
         for user_dict in results:
             recipe_instance = cls(user_dict)
             user_data = {
+                **user_dict,
                 "id": user_dict["users.id"],
                 "created_at": user_dict["users.created_at"],
                 "updated_at": user_dict["users.updated_at"],
-                "first_name": user_dict["first_name"],
-                "last_name": user_dict["last_name"],
-                "email": user_dict["email"],
-                "password": user_dict["password"]
             }
             user_instance = model_user.User(user_data)
             recipe_instance.user = user_instance
@@ -58,19 +57,24 @@ class Recipe:
     def get_one_recipe(cls, id):
         query = "SELECT * FROM recipes join users on users.id = recipes.user_id WHERE recipes.id = %(id)s;"
         results = connectToMySQL(DATABASE).query_db(query, {"id": id})
+
+        if not results:
+            return []
         dict = results[0]
         recipe_instance = cls(dict)
-        user_data = {
-            "id": dict["users.id"],
-            "created_at": dict["users.created_at"],
-            "updated_at": dict["users.updated_at"],
-            "first_name": dict["first_name"],
-            "last_name": dict["last_name"],
-            "email": dict["email"],
-            "password": dict["password"]
-        }
-        user_instance = model_user.User(user_data)
-        recipe_instance.user = user_instance
+
+        if dict["users.id"] != None:
+            user_data = {
+                "id": dict["users.id"],
+                "created_at": dict["users.created_at"],
+                "updated_at": dict["users.updated_at"],
+                "first_name": dict["first_name"],
+                "last_name": dict["last_name"],
+                "email": dict["email"],
+                "password": dict["password"]
+            }
+            user_instance = model_user.User(user_data)
+            recipe_instance.user = user_instance
         return recipe_instance
 
 

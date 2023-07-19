@@ -25,7 +25,10 @@ class User:
     def get_by_email(cls, data):
         query = "SELECT * FROM users WHERE email = %(email)s"
         results = connectToMySQL(DATABASE).query_db(query, data)
-        return cls(results[0])
+        if results:
+            return cls(results[0])
+        else:
+            return False
     
     # read
     @classmethod
@@ -51,8 +54,8 @@ class User:
         if not NAME_REGEX.match(data["last_name"]):
             flash("Must contain only letters", "error_users_last_name")
             is_valid = False
-        #! not dry
-        if len(User.get_by_email(data)) >= 1:
+
+        if User.get_by_email(data):
             flash("Email already exists", "error_users_email")
             is_valid = False
 
@@ -77,15 +80,12 @@ class User:
     @staticmethod
     def validator_login(data):
         is_valid = True
-        #! not dry
-        if not User.get_by_email(data):
-            flash("Email is not a registered email", "error_login_user_email")
-            is_valid = False
-        else:
-            #! not dry
-            user_in_db = User.get_by_email(data)
+        user_in_db = User.get_by_email(data)
+        if user_in_db:
             if not bcrypt.check_password_hash(user_in_db.password, data["password"]):
                 flash("Wrong password bub", "error_password_user_password")
                 is_valid = False
-
+        else:
+            flash("Email is not a registered email", "error_login_user_email")
+            is_valid = False
         return is_valid
